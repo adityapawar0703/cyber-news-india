@@ -1,0 +1,575 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-obsidian: #070A10;
+  --color-surface: #0D121D;
+  --color-surface-2: #121A29;
+  --color-surface-3: #182235;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #070a10;
+    color: #e2e8f0;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Subtle editorial dot/grid backdrop utility */
+.bg-editorial-grid {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #070a10;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ==================== LONG-FORM EDITORIAL PROSE ==================== */
+.article-prose {
+  color: #cbd5e1;
+  font-size: 1.075rem;
+  line-height: 1.82;
+  letter-spacing: -0.004em;
+}
+
+.article-prose > * + * {
+  margin-top: 1.35rem;
+}
+
+.article-prose h1 {
+  font-family: var(--font-display);
+  color: #f8fafc;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin-top: 2.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.article-prose h2 {
+  font-family: var(--font-display);
+  color: #f8fafc;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin-top: 2.6rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  scroll-margin-top: 6rem;
+}
+
+.article-prose h3 {
+  font-family: var(--font-display);
+  color: #f1f5f9;
+  font-size: 1.225rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  scroll-margin-top: 6rem;
+}
+
+.article-prose p {
+  margin-top: 1.2rem;
+  color: #cbd5e1;
+}
+
+.article-prose strong, .article-prose b {
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.article-prose em, .article-prose i {
+  color: #e2e8f0;
+  font-style: italic;
+}
+
+.article-prose a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-decoration-color: rgba(56, 189, 248, 0.4);
+  text-underline-offset: 3px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.article-prose a:hover {
+  color: #7dd3fc;
+  text-decoration-color: #7dd3fc;
+}
+
+.article-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.article-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.article-prose li {
+  margin-top: 0.55rem;
+  padding-left: 0.25rem;
+}
+
+.article-prose li::marker {
+  color: #38bdf8;
+}
+
+.article-prose blockquote {
+  position: relative;
+  margin: 2rem 0;
+  padding: 1.15rem 1.4rem 1.15rem 1.5rem;
+  border-left: 3px solid #38bdf8;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.06) 0%, rgba(13, 18, 29, 0.4) 100%);
+  border-radius: 0 0.65rem 0.65rem 0;
+  color: #e2e8f0;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.article-prose blockquote p {
+  margin: 0;
+  color: #e2e8f0;
+}
+
+.article-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: #7dd3fc;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 0.35rem;
+  padding: 0.14rem 0.42rem;
+  word-break: break-word;
+}
+
+.article-prose pre {
+  position: relative;
+  margin: 1.75rem 0;
+  background: #0a0f1a;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.article-prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: inherit;
+}
+
+.article-prose hr {
+  border: 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+  margin: 2.25rem 0;
+}
+
+/* Inline editorial images & alignment */
+.article-prose img {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.article-prose img[data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.article-prose img[data-align="left"] {
+  margin-right: auto;
+  margin-left: 0;
+  max-width: 65%;
+}
+
+.article-prose img[data-align="right"] {
+  margin-left: auto;
+  margin-right: 0;
+  max-width: 65%;
+}
+
+.article-prose img[data-align="full"] {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .article-prose img[data-align="left"],
+  .article-prose img[data-align="right"] {
+    max-width: 100%;
+  }
+}
+
+/* ==================== TIPTAP EDITOR CANVAS ==================== */
+.tiptap-editor .ProseMirror {
+  min-height: 440px;
+  outline: none;
+  padding: 1.5rem;
+}
+
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #64748b;
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap-editor .ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+/* ==================== SYNTAX HIGHLIGHTING (DARK EDITORIAL) ==================== */
+.hljs {
+  color: #e2e8f0;
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #64748b;
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #c084fc;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #fbbf24;
+}
+.hljs-string,
+.hljs-doctag {
+  color: #34d399;
+}
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #38bdf8;
+  font-weight: 600;
+}
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #60a5fa;
+}
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #7dd3fc;
+}
+.hljs-regexp,
+.hljs-link {
+  color: #f472b6;
+}
+.hljs-symbol,
+.hljs-bullet {
+  color: #fb7185;
+}
+.hljs-meta {
+  color: #94a3b8;
+}
+.hljs-addition {
+  color: #34d399;
+  background-color: rgba(52, 211, 153, 0.12);
+}
+.hljs-deletion {
+  color: #fb7185;
+  background-color: rgba(251, 113, 133, 0.12);
+}
+
+/* ==================== LIGHT EDITORIAL THEME ==================== */
+html.light,
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+html.light .bg-editorial-grid {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+}
+
+/* Primary & secondary canvas surfaces */
+html.light .bg-\[\#070A10\] { background-color: #f8fafc !important; }
+html.light .bg-\[\#070A10\]\/90 { background-color: rgba(255, 255, 255, 0.92) !important; }
+html.light .bg-\[\#070A10\]\/85 { background-color: rgba(15, 23, 42, 0.85) !important; }
+html.light .bg-\[\#080C14\] { background-color: #f1f5f9 !important; }
+html.light .bg-\[\#05080E\] { background-color: #eef2f7 !important; }
+html.light .bg-\[\#090D16\] { background-color: #f1f5f9 !important; }
+html.light .bg-\[\#0A0F1A\] { background-color: #f1f5f9 !important; }
+html.light .bg-\[\#0A0F1A\]\/80 { background-color: rgba(241, 245, 249, 0.85) !important; }
+html.light .bg-\[\#0A0F1A\]\/95 { background-color: rgba(255, 255, 255, 0.95) !important; }
+html.light .bg-\[\#0A101C\] { background-color: #eff6ff !important; }
+html.light .bg-\[\#0A0F18\] { background-color: #ffffff !important; }
+
+/* Card, input, toolbar & elevated surfaces */
+html.light .bg-\[\#0D121D\],
+html.light .bg-\[\#0B101B\] {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+html.light .bg-\[\#070B12\] {
+  background-color: #ffffff !important;
+}
+html.light .bg-\[\#0F1625\],
+html.light .bg-\[\#0D1422\],
+html.light .bg-\[\#121A29\] {
+  background-color: #f1f5f9 !important;
+}
+html.light .bg-slate-900,
+html.light .bg-slate-900\/70 {
+  background-color: #f1f5f9 !important;
+}
+html.light .bg-slate-800,
+html.light .bg-slate-800\/70,
+html.light .bg-slate-800\/60 {
+  background-color: #e2e8f0 !important;
+}
+html.light .hover\:bg-\[\#101726\]:hover,
+html.light .hover\:bg-\[\#101828\]:hover,
+html.light .hover\:bg-\[\#111827\]:hover,
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-800\/80:hover,
+html.light .hover\:bg-slate-800\/60:hover,
+html.light .hover\:bg-slate-800\/50:hover,
+html.light .hover\:bg-slate-800\/40:hover,
+html.light .hover\:bg-slate-800\/30:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Newsletter editorial gradient card in light mode */
+html.light .from-\[\#0F182A\] {
+  background-image: linear-gradient(135deg, #eff6ff 0%, #ffffff 55%, #f1f5f9 100%) !important;
+}
+/* Soften dark bottom image fades inside light cards */
+html.light .from-\[\#0D121D\] {
+  --tw-gradient-from: rgba(15, 23, 42, 0.35) !important;
+  --tw-gradient-via: transparent !important;
+}
+html.light .from-\[\#0D121D\]\/70 {
+  --tw-gradient-from: rgba(15, 23, 42, 0.32) !important;
+}
+html.light .ring-\[\#070A10\] {
+  --tw-ring-color: #ffffff !important;
+}
+
+/* Borders & Dividers */
+html.light .border-slate-800,
+html.light .border-slate-800\/90,
+html.light .border-slate-800\/85,
+html.light .border-slate-800\/80,
+html.light .border-slate-800\/75,
+html.light .border-slate-800\/70,
+html.light .border-slate-800\/60 {
+  border-color: #e2e8f0 !important;
+}
+html.light .border-slate-700,
+html.light .border-slate-700\/80,
+html.light .hover\:border-slate-700:hover,
+html.light .hover\:border-slate-700\/90:hover {
+  border-color: #cbd5e1 !important;
+}
+html.light .divide-slate-800\/80 > :not(:last-child),
+html.light .divide-slate-800\/75 > :not(:last-child),
+html.light .divide-slate-800\/70 > :not(:last-child) {
+  border-color: #e2e8f0 !important;
+}
+
+/* Text hierarchy in light mode */
+html.light .text-white:not(.bg-rose-600):not(.bg-rose-600\/95):not(.bg-rose-500\/90) {
+  color: #0f172a !important;
+}
+html.light .text-slate-100 { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1e293b !important; }
+html.light .text-slate-300 { color: #334155 !important; }
+html.light .text-slate-400 { color: #475569 !important; }
+html.light .text-slate-500 { color: #64748b !important; }
+html.light .text-slate-700 { color: #cbd5e1 !important; }
+
+html.light .hover\:text-white:hover { color: #0f172a !important; }
+html.light .hover\:text-slate-100:hover { color: #0f172a !important; }
+html.light .hover\:text-slate-200:hover { color: #0f172a !important; }
+html.light .hover\:text-slate-300:hover { color: #1e293b !important; }
+
+/* High-contrast editorial accent inks in light mode */
+html.light .text-sky-400,
+html.light .text-sky-300 { color: #0284c7 !important; }
+html.light .hover\:text-sky-300:hover,
+html.light .group:hover .group-hover\:text-sky-300 { color: #0369a1 !important; }
+
+html.light .text-amber-300,
+html.light .text-amber-400 { color: #b45309 !important; }
+html.light .text-rose-300,
+html.light .text-rose-400,
+html.light .text-rose-200 { color: #be123c !important; }
+html.light .text-emerald-300,
+html.light .text-emerald-400 { color: #047857 !important; }
+html.light .text-indigo-300,
+html.light .text-indigo-400 { color: #4338ca !important; }
+html.light .text-orange-300 { color: #c2410c !important; }
+html.light .text-teal-300 { color: #0f766e !important; }
+html.light .text-blue-300 { color: #1d4ed8 !important; }
+
+/* Keep primary CTA button text crisp white on sky-500 in light mode */
+html.light .bg-sky-500 {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+html.light .bg-sky-500:hover,
+html.light .hover\:bg-sky-400:hover {
+  background-color: #0369a1 !important;
+}
+
+/* Keep solid dark overlays / badges legible over photography */
+html.light .bg-\[\#070A10\]\/85 .text-amber-300,
+html.light .bg-\[\#070A10\]\/85.text-amber-300 {
+  color: #fcd34d !important;
+}
+
+/* Preserve dark terminal aesthetic for code blocks in light mode */
+html.light .cw-code-wrapper {
+  background-color: #0b1120 !important;
+  border-color: #1e293b !important;
+}
+html.light .cw-code-wrapper > div:first-child {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #94a3b8 !important;
+}
+html.light .cw-code-wrapper button {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+html.light .cw-code-wrapper pre,
+html.light .article-prose pre {
+  background-color: #0b1120 !important;
+  border-color: #1e293b !important;
+}
+html.light .article-prose pre code {
+  color: #e2e8f0 !important;
+}
+
+/* Light-mode long-form editorial prose */
+html.light .article-prose {
+  color: #334155;
+}
+html.light .article-prose h1,
+html.light .article-prose h2,
+html.light .article-prose h3,
+html.light .article-prose strong,
+html.light .article-prose b {
+  color: #0f172a;
+}
+html.light .article-prose h2 {
+  border-bottom-color: #e2e8f0;
+}
+html.light .article-prose p {
+  color: #334155;
+}
+html.light .article-prose em,
+html.light .article-prose i {
+  color: #1e293b;
+}
+html.light .article-prose a {
+  color: #0284c7;
+  text-decoration-color: rgba(2, 132, 199, 0.35);
+}
+html.light .article-prose a:hover {
+  color: #0369a1;
+  text-decoration-color: #0369a1;
+}
+html.light .article-prose li::marker {
+  color: #0284c7;
+}
+html.light .article-prose blockquote {
+  border-left-color: #0284c7;
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.07) 0%, rgba(241, 245, 249, 0.65) 100%);
+  color: #1e293b;
+}
+html.light .article-prose blockquote p {
+  color: #1e293b;
+}
+html.light .article-prose :not(pre) > code {
+  color: #0369a1;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+html.light .article-prose img {
+  border-color: #e2e8f0;
+}
+
+/* Smooth theme cross-fade on major containers */
+body,
+header,
+footer,
+section,
+article,
+aside {
+  transition: background-color 180ms ease, border-color 180ms ease, color 150ms ease;
+}
