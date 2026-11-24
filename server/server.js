@@ -96,8 +96,27 @@ if (fs.existsSync(clientDistPath)) {
 app.use(notFound);
 app.use(errorHandler);
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`[API] Cyber India News server running on http://localhost:${PORT}`);
-  });
-});
+// connectDB().then(() => {
+//   app.listen(PORT, () => {
+//     console.log(`[API] Cyber India News server running on http://localhost:${PORT}`);
+//   });
+// });
+
+const startServer = async () => {
+  try {
+    console.log('[API] Connecting to MongoDB...');
+
+    await connectDB();
+
+    console.log('[API] MongoDB connected successfully');
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[API] Cyber India News server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('[API] Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
