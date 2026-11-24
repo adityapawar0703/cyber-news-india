@@ -73,6 +73,7 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<ReturnType<typeof useEditor>>(null);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [linkInputOpen, setLinkInputOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -114,11 +115,74 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       attributes: {
         class: 'article-prose focus:outline-none',
       },
+      handlePaste: (_view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+              event.preventDefault();
+              setUploadingImg(true);
+              setUploadError(null);
+              api
+                .uploadImage(file)
+                .then((uploaded) => {
+                  editorRef.current
+                    ?.chain()
+                    .focus()
+                    .setImage({ src: uploaded.url, alt: 'Pasted image' })
+                    .run();
+                })
+                .catch((err) => {
+                  setUploadError(
+                    err instanceof Error ? err.message : 'Pasted image upload failed'
+                  );
+                })
+                .finally(() => setUploadingImg(false));
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      handleDrop: (_view, event) => {
+        const files = event.dataTransfer?.files;
+        if (!files || files.length === 0) return false;
+        const file = files[0];
+        if (file && file.type.startsWith('image/')) {
+          event.preventDefault();
+          setUploadingImg(true);
+          setUploadError(null);
+          api
+            .uploadImage(file)
+            .then((uploaded) => {
+              editorRef.current
+                ?.chain()
+                .focus()
+                .setImage({ src: uploaded.url, alt: file.name.replace(/\.[^.]+$/, '') })
+                .run();
+            })
+            .catch((err) => {
+              setUploadError(
+                err instanceof Error ? err.message : 'Dropped image upload failed'
+              );
+            })
+            .finally(() => setUploadingImg(false));
+          return true;
+        }
+        return false;
+      },
     },
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML());
     },
   });
+
+  useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
 
   // Sync external initial content loads (e.g. Edit existing article)
   useEffect(() => {

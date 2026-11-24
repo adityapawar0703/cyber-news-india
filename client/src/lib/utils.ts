@@ -40,8 +40,17 @@ export function getInitials(name = 'CI'): string {
 }
 
 export function resolveImageUrl(url?: string): string {
-  if (!url) return '/uploads/seed/hero-zero-day.jpg';
-  return url;
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+  const target = url || '/uploads/seed/hero-zero-day.jpg';
+  if (
+    target.startsWith('http://') ||
+    target.startsWith('https://') ||
+    target.startsWith('data:')
+  ) {
+    return target;
+  }
+  const cleanUrl = target.startsWith('/') ? target : `/${target}`;
+  return baseUrl ? `${baseUrl}${cleanUrl}` : cleanUrl;
 }
 
 export function getOrCreateVisitorId(): string {

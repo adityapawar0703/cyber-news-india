@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { resolveImageUrl } from '../../lib/utils';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
 import c from 'highlight.js/lib/languages/c';
@@ -131,6 +132,20 @@ export function ArticleContent({ html, onHeadingsExtracted }: ArticleContentProp
       pre.parentNode?.insertBefore(wrapper, pre);
       wrapper.appendChild(header);
       wrapper.appendChild(pre);
+    });
+
+    // 3. Resolve relative image sources if API base URL is configured
+    const imgEls = Array.from(el.querySelectorAll('img'));
+    imgEls.forEach((img) => {
+      const src = img.getAttribute('src');
+      if (
+        src &&
+        !src.startsWith('http://') &&
+        !src.startsWith('https://') &&
+        !src.startsWith('data:')
+      ) {
+        img.src = resolveImageUrl(src);
+      }
     });
   }, [html, onHeadingsExtracted]);
 

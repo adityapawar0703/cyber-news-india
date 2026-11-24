@@ -9,6 +9,7 @@ import type {
 import { getOrCreateVisitorId } from './utils';
 
 const TOKEN_STORAGE_KEY = 'cw_admin_token';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
 
 export function getStoredToken(): string | null {
   try {
@@ -59,7 +60,12 @@ async function request<T>(
     }
   }
 
-  const res = await fetch(path, { ...rest, headers });
+  const url =
+    path.startsWith('http://') || path.startsWith('https://')
+      ? path
+      : `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+
+  const res = await fetch(url, { ...rest, headers });
   const text = await res.text();
   let data: unknown = {};
   try {
