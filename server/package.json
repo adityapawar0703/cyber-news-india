@@ -18,7 +18,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
     "multer": "^1.4.5-lts.1",
-    "sanitize-html": "^2.14.0"
+    "sanitize-html": "2.14.0"
+  },
+  "overrides": {
+    "htmlparser2": "^8.0.2"
   },
   "engines": {
     "node": ">=18.0.0"
