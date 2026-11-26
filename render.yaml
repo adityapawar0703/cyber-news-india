@@ -1,0 +1,21 @@
+services:
+  # Render Web Service for Cyber India News Backend
+  - type: web
+    name: cyber-india-news-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      # The following must be set in your Render dashboard:
+      # - MONGO_URI (MongoDB Atlas connection string)
+      # - JWT_SECRET (Random 64-character secret)
+      # - CLIENT_URL (Your frontend URL e.g. https://your-site.vercel.app)

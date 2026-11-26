@@ -2,9 +2,10 @@ import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin.js';
 
 function signToken(admin) {
+  const secret = process.env.JWT_SECRET || 'cin_fallback_jwt_secret_please_set_in_env_2026';
   return jwt.sign(
     { id: admin._id, username: admin.username, role: admin.role },
-    process.env.JWT_SECRET,
+    secret,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 }

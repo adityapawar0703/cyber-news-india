@@ -1,143 +1,72 @@
 # Deployment Guide — Cyber India News Platform
 
-This guide outlines how to deploy **Cyber India News** to production across popular hosting providers (**Vercel + Render / Railway**, **Single-Server Unified**, or **Docker**).
+This guide outlines how to deploy the **Cyber India News** backend to **Render** (and frontend to **Vercel** or **Render**).
 
 ---
 
-## Architecture Overview
+## 1. Quick Render Setup (Backend API)
 
-```
-Split Deployment (Recommended for Serverless & Auto-Scale):
-┌────────────────────────────┐        ┌────────────────────────────┐        ┌─────────────────────┐
-│ Frontend (Vercel / Netlify)│  ───>  │ Backend API (Render / VPS) │  ───>  │ MongoDB Atlas       │
-│ React 19 + Tailwind v4     │        │ Express.js + Node.js 22    │        │ Cloud Database      │
-└────────────────────────────┘        └────────────────────────────┘        └─────────────────────┘
+When creating a new **Web Service** on [Render.com](https://render.com):
 
-Unified Single-Server Deployment (Simpler, One Service):
-┌──────────────────────────────────────────────────────────────────┐        ┌─────────────────────┐
-│ Single Node.js Container / Host (Render / Railway / VPS / Docker) │  ───>  │ MongoDB Atlas       │
-│ Serves: /api/*, /uploads/*, and client/dist static SPA           │        │ Cloud Database      │
-└──────────────────────────────────────────────────────────────────┘        └─────────────────────┘
-```
+### Essential Service Settings on Render:
+| Setting | Recommended Value | Notes |
+| :--- | :--- | :--- |
+| **Name** | `cyber-india-news-api` | Or any name you prefer |
+| **Language / Runtime** | `Node` | Automatically uses Node 20+ via `.node-version` |
+| **Root Directory** | `server` | **Important:** If left empty, root `package.json` will install server dependencies via postinstall |
+| **Build Command** | `npm install` | If root directory is `server`, use `npm install`. If root directory is empty, use `npm run install:all` |
+| **Start Command** | `npm start` | Or `node server.js` |
+| **Health Check Path** | `/api/health` | Root `/` and `/healthz` are also supported and return `200 OK` |
 
 ---
 
-## 1. Environment Variables Reference
+## 2. Render Environment Variables (Crucial)
 
-### Frontend (`client/.env` / Vercel / Netlify)
+In your Render service dashboard under **Environment**:
 
-| Variable | Description | Example (Production) | Example (Local) |
-| :--- | :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | Base URL of your backend API (no trailing slash). **Leave empty if backend serves the frontend from the same domain.** | `https://api.cyberindianews.in` or `https://cin-api.onrender.com` | `""` (uses Vite proxy) |
+| Key | Value | Purpose |
+| :--- | :--- | :--- |
+| `NODE_ENV` | `production` | Enables production optimizations |
+| `PORT` | `10000` | Render sets this automatically, but you can set 10000 |
+| `MONGO_URI` | `mongodb+srv://<user>:<password>@cluster0.xxxx.mongodb.net/cyber_india_news?retryWrites=true&w=majority` | **Required.** Your MongoDB Atlas connection string |
+| `JWT_SECRET` | *(64-character random string)* | Secret used to sign admin JWT sessions |
+| `CLIENT_URL` | `https://your-frontend.vercel.app,http://localhost:5173` | Allowed origins for CORS (comma-separated, no trailing slash) |
+| `ADMIN_PASSWORD` | `YourStrongAdminPassword#2026` | Used if running `node utils/seed.js` in Render Shell |
 
-### Backend (`server/.env` / Render / Railway / VPS)
-
-| Variable | Required | Description | Example |
-| :--- | :---: | :--- | :--- |
-| `PORT` | Auto | Server port (cloud providers set this automatically) | `5000` |
-| `NODE_ENV` | Yes | Set to `production` in production | `production` |
-| `MONGO_URI` | Yes | MongoDB connection string (e.g. MongoDB Atlas) | `mongodb+srv://user:pass@cluster0.xxx.mongodb.net/cyber_india_news?retryWrites=true&w=majority` |
-| `JWT_SECRET` | Yes | 64+ char random string for signing admin JWT sessions | `cin_prod_e98f...` |
-| `JWT_EXPIRES_IN` | No | Token lifetime (defaults to `7d`) | `7d` |
-| `CLIENT_URL` | Yes | Allowed frontend origin(s) for CORS (comma-separated, no trailing slashes) | `https://cyberindianews.in,https://cyber-india-news.vercel.app` |
-| `ADMIN_USERNAME`| For seed | Initial admin username used when running `seed.js` | `admin` |
-| `ADMIN_EMAIL` | For seed | Initial admin email used when running `seed.js` | `editor@cyberindianews.in` |
-| `ADMIN_PASSWORD`| For seed | Initial admin password used when running `seed.js` | `StrongPass#2026` |
+> **Pro Tip on MongoDB Atlas:**
+> 1. In [MongoDB Atlas](https://cloud.mongodb.com) -> **Network Access**, ensure you have added IP `0.0.0.0/0` (Allow Access from Anywhere). Render uses dynamic cloud IPs; without `0.0.0.0/0`, Atlas will reject the connection.
+> 2. In Atlas -> **Database Access**, verify your database user has read/write privileges and the password has no unencoded special characters (or is URL-encoded if using `@`, `:`, `#`, etc.).
 
 ---
 
-## Option A: Split Deployment (Vercel Frontend + Render Backend)
+## 3. Initializing / Seeding the Database on Render
 
-### Step 1: Set up MongoDB Atlas (Free Cloud Database)
-1. Go to [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas) and create a free M0 cluster.
-2. Under **Database Access**, create a user (e.g. `cin_admin`) with a strong password.
-3. Under **Network Access**, add IP `0.0.0.0/0` (allow access from anywhere) so cloud hosts can connect.
-4. Click **Connect** > **Drivers** and copy your connection string:
-   ```
-   mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/cyber_india_news?retryWrites=true&w=majority
-   ```
-
-### Step 2: Deploy Backend to Render (or Railway)
-1. Push your repository to GitHub / GitLab.
-2. Go to [render.com](https://render.com) > **New Web Service**.
-3. Connect your repository.
-4. Configure settings:
-   - **Root Directory**: `server`
-   - **Environment**: `Node`
-   - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
-5. In **Environment Variables**, add:
-   - `NODE_ENV` = `production`
-   - `MONGO_URI` = *(your Atlas connection string)*
-   - `JWT_SECRET` = *(generate a 64-char random string)*
-   - `CLIENT_URL` = `https://your-frontend.vercel.app` *(update once frontend is deployed)*
-   - `ADMIN_PASSWORD` = `YourCustomAdminPassword#2026`
-6. Click **Deploy**. Note your backend URL (e.g., `https://cyber-india-news-api.onrender.com`).
-7. *(Optional Initial Seed)*: In Render's **Shell** tab, run:
+After your Render service is deployed and MongoDB is connected:
+1. In the Render Dashboard, open the **Shell** tab of your service.
+2. Run:
    ```bash
    node utils/seed.js
    ```
+   *(If your root directory was left at the project root, run `npm run seed`).*
+3. This creates the default admin account and populates sample cybersecurity articles and visitor stats.
 
-### Step 3: Deploy Frontend to Vercel
-1. Go to [vercel.com](https://vercel.com) > **Add New Project**.
-2. Import your GitHub repository.
-3. In project settings:
+---
+
+## 4. Frontend Deployment (Vercel)
+
+1. Go to [Vercel.com](https://vercel.com) -> **Add New Project** -> import your GitHub repository.
+2. In project settings:
    - **Root Directory**: `client`
    - **Framework Preset**: `Vite`
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
-4. Under **Environment Variables**, add:
-   - `VITE_API_BASE_URL` = `https://cyber-india-news-api.onrender.com` *(your backend URL without trailing slash)*
-5. Click **Deploy**.
-6. Once deployed, copy your Vercel URL (e.g., `https://cyber-india-news.vercel.app`) and add it to `CLIENT_URL` in your Render backend environment variables!
+3. In **Environment Variables**, add:
+   - `VITE_API_BASE_URL`: `https://cyber-india-news-api.onrender.com` *(your Render backend URL without trailing slash)*
+4. Click **Deploy**.
+5. Copy your live Vercel URL (e.g. `https://cyber-india-news.vercel.app`) and paste it into `CLIENT_URL` in your Render backend settings.
 
 ---
 
-## Option B: Unified Single-Server Deployment (Render / Railway / VPS)
+## 5. Render Blueprint (Alternative 1-Click Deploy)
 
-In this mode, Express serves the API, user uploads, and the pre-built React frontend from `client/dist` on a single port!
-
-### On Render or Railway:
-- **Root Directory**: Leave blank (root of repository).
-- **Build Command**:
-  ```bash
-  npm run install:all && npm run build
-  ```
-- **Start Command**:
-  ```bash
-  npm start
-  ```
-- **Environment Variables**:
-  - `NODE_ENV` = `production`
-  - `MONGO_URI` = *(your Atlas connection string)*
-  - `JWT_SECRET` = *(your 64-char random secret)*
-  - `CLIENT_URL` = `*` *(or your custom domain)*
-
----
-
-## Option C: Docker / Docker Compose
-
-A production-ready `Dockerfile` and `docker-compose.yml` are included.
-
-To build and run locally or on a VPS:
-```bash
-# 1. Start all containers (App + MongoDB)
-docker compose up -d --build
-
-# 2. Seed database in the running container
-docker compose exec app node utils/seed.js
-
-# 3. Access the platform
-# Frontend & API: http://localhost:5000
-# Admin Login:    http://localhost:5000/admin/login
-```
-
----
-
-## Post-Deployment Checklist
-
-- [ ] Check backend health endpoint: `https://your-backend.com/api/health` returns `{"status":"ok"}`.
-- [ ] Sign in to Admin at `https://your-frontend.com/admin/login` using your configured credentials.
-- [ ] Verify image uploads: Upload an article cover image in the Admin Editor and confirm it renders.
-- [ ] Test SPA routing: Directly refresh a deep URL like `/article/...` or `/category/cybersecurity` to confirm no 404 error occurs.
-- [ ] Test the theme toggle (Sun/Moon icon) persists preferences across sessions.
+A `render.yaml` file is provided in the root of the repository. You can use Render's **Blueprints** tab to automatically provision the web service with all required settings.
